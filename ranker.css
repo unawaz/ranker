@@ -1,0 +1,35 @@
+body {
+  background-color: grey;
+}
+.screen {
+  float:left;
+  background-color:white;
+  margin:2pt;
+  padding:2pt;
+}
+#main {
+  clear:both;
+  background-color:white;
+  margin:2pt;
+  padding:2pt;
+}
+
+#compare {
+  background-color:grey;
+}
+
+.compare-choice {
+  background-color:white;
+  margin:3pt;
+  padding:2pt;
+}
+
+#rankings {
+  background-color:grey;
+}
+
+#rankings li {
+ background-color:white; 
+ margin:2pt;
+ padding:2pt;
+}
