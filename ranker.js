@@ -21,7 +21,7 @@ function new_rateable(s) {
 
 function change_rating(winner,loser) {
   const w = get_rating(winner);
-  const l = get_rating(loser);:
+  const l = get_rating(loser);
   const ww = Elo.getNewRating(w,l,1);
   const ll = Elo.getNewRating(l,w,0);
   set_rating(winner,ww);
