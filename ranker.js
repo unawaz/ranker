@@ -1,23 +1,17 @@
-var ideas = ["idea 1","idea 2","idea 3"];
-var choices = ["default choice a","default choice b"];
-var chosen = [];
-var ratings = new Map();
+// var choices = ["default choice a","default choice b"];
+// var ratings = new Map();
 
 function set_rating(s,v) {
-  ratings.set(s,v);
+  localStorage.setItem(s,v);
 }
 
 function get_rating(s) {
-  return ratings.get(s);
+  return Number(localStorage.getItem(s));
 } 
 
 function new_rateable(s) {
-  set_ratings(s,0);
+  set_rating(s,0);
 }
-
-// console.log(Elo.getNewRating(1600,1700,1));
-// console.log(Elo.getNewRating(1600,1700,0));
-// console.log(Elo.getNewRating(1600,1700,0.5));
 
 function change_rating(winner,loser) {
   const w = get_rating(winner);
@@ -32,13 +26,17 @@ function choose(x) {
   const c = x.text();
   const a = $("#compare-a").text();
   const b = $("#compare-b").text();
-  chosen.push([c,[a,b]]);
+  if (c == a) {
+    w = a; l = b;
+  } else {
+    w = b; l = a;
+  }
+  change_rating(w,l);
   random_choices();
 }
 
 function add_idea(x) { 
- ideas.push(x); 
- $("#rankings ol").append($("<li>").append(x));
+ new_rateable(x); 
 } 
 
 function hide_main() {
@@ -55,21 +53,46 @@ function choices_set(a,b) {
     $("#compare-b").append(b);
 }
 
-function random_item(a) {
-  const v = a[Math.floor(Math.random() * a.length)];
-  return v
+function random_idea() {
+  // ideas = Array.from(ratings.keys());
+  const ideas = Object.keys(localStorage);
+  return ideas[Math.floor(Math.random() * ideas.length)];
 }
 
 function random_choices() {
-  const a = random_item(ideas);
-  const b = random_item(ideas);
+  var different = false;
+  var a = "";
+  var b = "";
+  while (different == false) {
+    a = random_idea();
+    b = random_idea();
+    if (a == b) { 
+      different = false;
+    } else {
+      different = true;
+    }
+  }
   choices_set(a,b);
 }
 
+function delete_button(x) {
+  var b = $("<button>Delete</button>");
+  b.click(function() {
+    localStorage.removeItem(x);
+    show_ideas_list();
+  });
+  return b;
+}
+
 function show_ideas_list() {
+  var l = [...Object.entries(localStorage)];
+  l = l.sort((a,b) => b[1] - a[1]); 
   $("#rankings ol").empty();
-  for (s of ideas) {
-    $("#rankings ol").append($("<li>").append(s));
+  for (x of l) {
+   $("#rankings ol")
+      .append($("<li>")
+        .append(x[0])
+        .append(delete_button(x[0])));
   }
 }
 
@@ -101,6 +124,10 @@ $(function() {
   $("#compare-b").click(function() { choose($(this)); });
 
   hide_main();
-  
+
+  new_rateable("idea 1");
+  new_rateable("idea 2");
+  new_rateable("idea 3");
+
 });
 
