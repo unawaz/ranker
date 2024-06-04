@@ -1,3 +1,5 @@
+:- module(elo,[scores/4,scores_drawn/4]).
+
 k(32).
 fraction(400).
 result(win,1).

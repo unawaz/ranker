@@ -1,39 +1,39 @@
-intercalate(L,S,O) :- atomic_list_concat(L,S,O).
-concat(L,O) :- atomic_list_concat(L,O).
-unwords(L,O) :- intercalate(L,' ',O).
-unlines(L,O) :- intercalate(L,'\n',O).
-uncommas(L,O) :- intercalate(L,',',O).
-surround(X,Z,Y,O) :- concat([X,Y,Z],O).
-middle(X,M,O) :- surround(X,X,M,O).
-dq(X,O) :- middle('"',X,O).
-sq(X,O) :- middle('\'',X,O).
-angles(X,O) :- surround('<','>',X,O).
-braces(X,O) :- surround('{','}',X,O).
-parens(X,O) :- surround('(',')',X,O).
-squares(X,O) :- surround('[',']',X,O).
-equals(X,Y,O) :- concat([X,'=',Y],O).
+:- module(elo,[scores/4,scores_drawn/4]).
 
-kv([K,V],O) :- dq(V,VQ),equals(K,VQ,O).
-kvl(L,O) :- maplist(kv,L,O).
+k(32).
+fraction(400).
+result(win,1).
+result(draw,0.5).
+result(lose,0).
+delta(Result,Arating,Brating,Delta) :-
+  fraction(Fraction),
+  k(K),
+  result(Result,ResultValue),
+  Difference is Brating - Arating,
+  Fractioned is Difference / Fraction,
+  Scaled is 10 ** Fractioned,
+  AboveOne is Scaled + 1,
+  Expected is 1 / AboveOne,
+  Reality is ResultValue - Expected,
+  Adjusted is K * Reality,
+  Rounded is round(Adjusted),
+  Delta = Rounded.
+score(A,B,Result,Score) :-
+  delta(Result,A,B,Delta),
+  Score is A + Delta.
+win(A,B,NewA) :- score(A,B,win,NewA).
+lose(A,B,NewA) :- score(A,B,lose,NewA).
+draw(A,B,NewA) :- score(A,B,draw,NewA).
 
-ctag(T,O) :- concat(['</',T,'>'],O).
-otag(T,KVL,O) :- kvl(KVL,S),concat(['<',T,' ',S,'>'],O).
-stag(T,O) :- angles(T,O).
+scores(Winner,Loser,NewWinner,NewLoser) :-
+  win(Winner,Loser,NewWinner),
+  lose(Loser,Winner,NewLoser).
+scores_drawn(A,B,NewA,NewB) :-
+  draw(A,B,NewA),draw(B,A,NewB).
 
-tag(T,KVL,Body,O) :- 
-  otag(T,KVL,Ot),ctag(T,Ct),
-  concat([Ot,Body,Ct],O).
-sctag(T,L,O) :- stag(T,A),ctag(T,Z),concat(L,LL),concat([A,LL,Z],O).
-
-title(Title,O) :- sctag('title',[Title],O).
-head(Title,O) :- 
-  title(Title,T),
-  sctag('head',[T],O).
-html(Title,Body,O) :-
-  body(Body,B),
-  head(Title,Head),
-  sctag('html',[Head,B],O).
-
-head([Css],[s],Title,Body).
-
-:- halt.
+test_pass(X,Y,M) :- X == Y,writeln(M-passed);writeln(M-failed).
+test :- 
+  A = 1600,B = 1700,
+  win(A,B,Win),test_pass(Win,1620,win),
+  draw(A,B,Draw),test_pass(Draw,1604,draw),
+  lose(A,B,Lose),test_pass(Lose,1588,lose).
