@@ -1,18 +1,17 @@
-:- discontiguous pausable/2.
-one_many(account,user).
-one_many(directive,item).
-one_many(account,item).
-one_many(account,directive).
-one_only(account).
-once_only(account,user).
-once_only(directive,item).
-once_only(account,item).
-once_only(account,directive).
-grantable(account,user,item).
-grantable(account,user,directive).
-pausable(account,directive).
-pausable(account,directive,item).
-pausable(account,user).
-pausable(account).
+% agent based system
+% javascript user agent
+% user server user agent
+% per directive agent
+% per account agent
+% system administration agent
+% text user agent for developing and testing
+
+:- consult(browser_user).
+:- consult(server_user).
+:- consult(account).
+:- consult(directive).
+:- consult(admin).
+:- consult(text_user).
 
 :- halt.
+

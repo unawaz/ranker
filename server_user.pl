@@ -1,0 +1,2 @@
+:- module(server_user,[]).
+
